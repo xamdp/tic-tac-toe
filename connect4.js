@@ -139,7 +139,6 @@ function GameController(
 	const checkWinner = () => {
 		if (checkVertical() || checkHorizontal()) {
 			console.log(`The winner is ${getActivePlayer().name}`);
-			resetGame();
 			return true;
 		} else {
 			console.log(`what you lookin at, keep playing.`);
@@ -152,14 +151,15 @@ function GameController(
 			`Dropping ${getActivePlayer().name}'s token into column ${column}...`,
 		);
 		board.dropToken(column, getActivePlayer().token);
-		// check for a winner here and handle that logic, such as a win message.
-		// should check if there are 4 consecutive player token
 
+		// check for a winner here and handle that logic, such as a win message.
 		const winnerFound = checkWinner();
-		if (!winnerFound) {
-			switchPlayerTurn();
-			printNewRound();
+		if (winnerFound) {
+			return getActivePlayer();
 		}
+		switchPlayerTurn();
+		printNewRound();
+		return false;
 	};
 
 	printNewRound();
@@ -168,6 +168,7 @@ function GameController(
 		playRound,
 		getActivePlayer,
 		checkWinner,
+		resetGame,
 		getBoard: board.getBoard,
 	};
 }
@@ -176,6 +177,7 @@ function ScreenController() {
 	const game = GameController();
 	const playerTurnDiv = document.querySelector(".turn");
 	const boardDiv = document.querySelector(".board");
+	const messageDiv = document.querySelector(".message");
 
 	const updateScreen = () => {
 		// clear the board
@@ -210,8 +212,19 @@ function ScreenController() {
 		// make sure i've clicked a column and not the gaps in between
 		if (!selectedColumn) return;
 
-		game.playRound(selectedColumn);
-		updateScreen();
+		const winner = game.playRound(selectedColumn);
+		if (winner) {
+			messageDiv.textContent = `${winner.name} wins!`;
+			boardDiv.before(messageDiv);
+
+			setTimeout(() => {
+				game.resetGame();
+				updateScreen();
+				messageDiv.remove();
+			}, 1500);
+		} else {
+			updateScreen();
+		}
 	}
 	boardDiv.addEventListener("click", clickHandlerBoard);
 
