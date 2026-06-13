@@ -43,7 +43,11 @@ function Cell() {
 
 	const getValue = () => value;
 
-	return { addToken, getValue };
+	const reset = () => {
+		value = 0;
+	};
+
+	return { addToken, getValue, reset };
 }
 
 function GameController(
@@ -76,6 +80,18 @@ function GameController(
 		console.log(`${getActivePlayer().name}'s turn.`);
 	};
 
+	const resetGame = () => {
+		const currentBoard = board.getBoard();
+		// resets every cell in the board
+		currentBoard.forEach((row) => {
+			row.forEach((cell) => {
+				cell.reset();
+			});
+		});
+		// resets the activePlayer
+		activePlayer = players[0];
+	};
+
 	// so to access the board values, i should access it the way how the board was created
 	const checkVertical = () => {
 		const updatedBoard = board.getBoard();
@@ -98,6 +114,7 @@ function GameController(
 		return false;
 	};
 
+	// so to access the board values, i should access it the way how the board was created
 	const checkHorizontal = () => {
 		const updatedBoard = board.getBoard();
 		for (let row = 0; row < board.rows; row++) {
@@ -122,8 +139,11 @@ function GameController(
 	const checkWinner = () => {
 		if (checkVertical() || checkHorizontal()) {
 			console.log(`The winner is ${getActivePlayer().name}`);
+			resetGame();
+			return true;
 		} else {
 			console.log(`what you lookin at, keep playing.`);
+			return false;
 		}
 	};
 
@@ -134,10 +154,12 @@ function GameController(
 		board.dropToken(column, getActivePlayer().token);
 		// check for a winner here and handle that logic, such as a win message.
 		// should check if there are 4 consecutive player token
-		checkWinner();
 
-		switchPlayerTurn();
-		printNewRound();
+		const winnerFound = checkWinner();
+		if (!winnerFound) {
+			switchPlayerTurn();
+			printNewRound();
+		}
 	};
 
 	printNewRound();
@@ -145,6 +167,7 @@ function GameController(
 	return {
 		playRound,
 		getActivePlayer,
+		checkWinner,
 		getBoard: board.getBoard,
 	};
 }
