@@ -58,6 +58,7 @@ function Player(name) {
 	};
 }
 
+// i need to call GameController and pass playernames, instead of these default values.
 function GameController(
 	playerOneName = "Player One",
 	playerTwoName = "Player Two",
@@ -181,9 +182,30 @@ function GameController(
 	};
 }
 
-function ScreenController() {
-	const game = GameController();
-	// const board = Gameboard();
+function GameIntro() {
+	// creates GameController with custom names, and sets up ScreenController
+	// event handler for submitting player names
+	function startGameHandler(e) {
+		e.preventDefault();
+		// get inputs
+		const playerOneInput = document.getElementById("playerone");
+		const playerTwoInput = document.getElementById("playertwo");
+
+		// read values
+		const p1Name = playerOneInput.value;
+		const p2Name = playerTwoInput.value;
+
+		const introDiv = document.querySelector(".intro");
+		introDiv.style.display = "none";
+
+		const game = GameController(p1Name, p2Name);
+		ScreenController(game);
+	}
+	const startGameBtn = document.querySelector("#start-game");
+	startGameBtn.addEventListener("click", startGameHandler);
+}
+
+function ScreenController(game) {
 	const playerTurnDiv = document.querySelector(".turn");
 	const boardDiv = document.querySelector(".board");
 	const messageDiv = document.querySelector(".message");
@@ -246,11 +268,4 @@ function ScreenController() {
 	updateScreen();
 }
 
-ScreenController();
-
-window.addEventListener("load", () => {
-	const intro = document.querySelector(".intro");
-	intro.style.opacity = 0;
-	// should only remove the intro after player names input
-	setTimeout(() => intro.remove(), 500);
-});
+GameIntro();

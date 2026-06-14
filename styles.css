@@ -4,12 +4,12 @@
 	left: 0;
 	width: 100vw;
 	height: 100vh;
-	color: white;
+	color: black;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	z-index: 9999;
-	transition: opacity 0.5s ease;
+	/* z-index: 9999; */
+	/* transition: opacity 2s ease; */
 }
 
 .board {
@@ -21,8 +21,8 @@
 	border: 1px solid black;
 	gap: 2px;
 	padding: 2px;
-	background-color: yellow;
 }
+
 
 .cell {
 	display: flex;
@@ -31,7 +31,7 @@
 	text-align: center;
 	font-size: 2rem;
 	border: 1px solid grey;
-	background: lightyellow;
+	background: pink;
 	cursor: pointer;
 }
 

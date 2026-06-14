@@ -9,15 +9,18 @@
     <body>
         <div class="container">
             <div class="intro">
-                <p>
-                    <label for="playerone"></label>
-                    <input type="text" id="playerone" />
-                </p>
+                <form action="/" id="addPlayer">
+                    <p>
+                        <label for="playerone">Player 1</label>
+                        <input type="text" id="playerone" name="playerone" />
+                    </p>
 
-                <p>
-                    <label for="playertwo"></label>
-                    <input type="text" id="playertwo" />
-                </p>
+                    <p>
+                        <label for="playertwo">Player 2</label>
+                        <input type="text" id="playertwo" name="playertwo" />
+                    </p>
+                    <button id="start-game" type="submit">Start Game !</button>
+                </form>
             </div>
             <div class="message"></div>
             <div class="turn"></div>
