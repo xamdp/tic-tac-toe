@@ -50,6 +50,14 @@ function Cell() {
 	return { addToken, getValue, reset };
 }
 
+function Player(name) {
+	const getPlayerName = () => name;
+
+	return {
+		getPlayerName,
+	};
+}
+
 function GameController(
 	playerOneName = "Player One",
 	playerTwoName = "Player Two",
@@ -175,9 +183,13 @@ function GameController(
 
 function ScreenController() {
 	const game = GameController();
+	// const board = Gameboard();
 	const playerTurnDiv = document.querySelector(".turn");
 	const boardDiv = document.querySelector(".board");
 	const messageDiv = document.querySelector(".message");
+
+	// it must show first the intro screen before the created board game.
+	// const showIntro = () => { };
 
 	const updateScreen = () => {
 		// clear the board
@@ -214,6 +226,8 @@ function ScreenController() {
 
 		const winner = game.playRound(selectedColumn);
 		if (winner) {
+			// temporary updates the screen when winner is found.
+			updateScreen();
 			messageDiv.textContent = `${winner.name} wins!`;
 			boardDiv.before(messageDiv);
 
@@ -233,3 +247,10 @@ function ScreenController() {
 }
 
 ScreenController();
+
+window.addEventListener("load", () => {
+	const intro = document.querySelector(".intro");
+	intro.style.opacity = 0;
+	// should only remove the intro after player names input
+	setTimeout(() => intro.remove(), 500);
+});
