@@ -4,7 +4,7 @@
 This is a reference codebase branch to create tic tac toe ODIN project.
 
 
-View the blog reference from (here)[https://www.ayweb.dev/blog/building-a-house-from-the-inside-out].
+View the blog reference from [here](https://www.ayweb.dev/blog/building-a-house-from-the-inside-out).
 
 
 
