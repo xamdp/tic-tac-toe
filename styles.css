@@ -12,6 +12,12 @@
 	/* transition: opacity 2s ease; */
 }
 
+.play-again {
+	display: none;
+	justify-content: center;
+	align-items: center;
+}
+
 .board {
 	display: grid;
 	height: 500px;

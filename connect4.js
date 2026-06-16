@@ -209,6 +209,7 @@ function ScreenController(game) {
 	const playerTurnDiv = document.querySelector(".turn");
 	const boardDiv = document.querySelector(".board");
 	const messageDiv = document.querySelector(".message");
+	const playAgainBtn = document.querySelector("#play-again-btn");
 
 	// it must show first the intro screen before the created board game.
 	// const showIntro = () => { };
@@ -253,16 +254,21 @@ function ScreenController(game) {
 			messageDiv.textContent = `${winner.name} wins!`;
 			boardDiv.before(messageDiv);
 
-			setTimeout(() => {
-				game.resetGame();
-				updateScreen();
-				messageDiv.remove();
-			}, 1500);
+			// if winner is found, should also display the play again button
+			playAgainBtn.style.display = "block";
 		} else {
 			updateScreen();
 		}
 	}
+
+	function playNewGame(e) {
+		game.resetGame();
+		updateScreen();
+		messageDiv.remove();
+		playAgainBtn.style.display = "none";
+	}
 	boardDiv.addEventListener("click", clickHandlerBoard);
+	playAgainBtn.addEventListener("click", playNewGame);
 
 	// initial render
 	updateScreen();
