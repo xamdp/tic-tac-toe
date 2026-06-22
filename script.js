@@ -107,11 +107,41 @@ function GameController(
 	};
 }
 
-function ScreenController() {
+function ScreenController(game) {
 	const playerTurnDiv = document.querySelector(".turn");
 	const boardDiv = document.querySelector(".board");
 	const messageDiv = document.querySelector(".message");
 	const playAgainBtn = document.querySelector("#play-again-btn");
+
+	const updateScreen = () => {
+		// clear the board
+		boardDiv.textContent = "";
+
+		// get updated board and player turn
+		const board = game.getBoard();
+		const activePlayer = game.getActivePlayer();
+
+		// display player's turn
+		playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
+
+		// render board
+		board.forEach((row) => {
+			row.forEach((cell, index) => {
+				// anything clickable should be a button
+				const cellButton = document.createElement("button");
+				cellButton.classList.add("cell");
+
+				// create a data attribute to identify the column
+				// this makes it easier to pass into playRound()
+				cellButton.dataset.column = index;
+				cellButton.textContent = cell.getValue();
+				boardDiv.appendChild(cellButton);
+			});
+		});
+	};
+
+	updateScreen();
 }
 
 const startGame = GameController();
+ScreenController(startGame);
