@@ -140,6 +140,17 @@ function ScreenController(game) {
 		});
 	};
 
+	function clickHandlerBoard(e) {
+		const selectedColumn = e.target.dataset.column;
+
+		if (!selectedColumn) return;
+
+		game.playRound(selectedColumn);
+		console.log("a cell is clicked");
+		updateScreen();
+	}
+
+	boardDiv.addEventListener("click", clickHandlerBoard);
 	updateScreen();
 }
 
