@@ -31,7 +31,7 @@ function GameBoard() {
 		console.log(boardWithCellValues);
 	};
 
-	return { getBoard, dropToken, printBoard };
+	return { getBoard, dropToken, printBoard, rows, columns };
 }
 
 function Cell() {
@@ -65,11 +65,11 @@ function GameController(
 	const players = [
 		{
 			name: playerOneName,
-			token: 1,
+			token: "X",
 		},
 		{
 			name: playerTwoName,
-			token: 2,
+			token: "O",
 		},
 	];
 
@@ -86,6 +86,68 @@ function GameController(
 		console.log(`${getActivePlayer().name}'s turn.`);
 	};
 
+	const resetGame = () => {
+		const currentBoard = board.getBoard();
+		// reset every cell in the board
+		currentBoard.forEach((row) => {
+			row.forEach((cell) => {
+				cell.reset();
+			});
+		});
+
+		// resets the activePlayer
+		activePlayer = players[0];
+	};
+
+	const checkVertical = () => {
+		const updatedBoard = board.getBoard();
+		for (let col = 0; col < board.columns; col++) {
+			for (let row = 0; row <= board.rows - 3; row++) {
+				if (
+					updatedBoard[row][col].getValue() ===
+					getActivePlayer().token &&
+					updatedBoard[row + 1][col].getValue() ===
+					getActivePlayer().token &&
+					updatedBoard[row + 2][col].getValue() ===
+					getActivePlayer().token
+				) {
+					return true;
+				}
+			}
+		}
+		return false;
+	};
+
+	const checkHorizontal = () => {
+		const updatedBoard = board.getBoard();
+		for (let row = 0; row < board.rows; row++) {
+			// am not sure what board.columns - 3 does
+			for (let col = 0; col <= board.columns - 3; col++) {
+				if (
+					updatedBoard[row][col].getValue() ===
+					getActivePlayer().token &&
+					updatedBoard[row][col + 1].getValue() ===
+					getActivePlayer().token &&
+					updatedBoard[row][col + 2].getValue() ===
+					getActivePlayer().token
+				) {
+					return true;
+				}
+			}
+		}
+		return false;
+	};
+
+	const checkWinner = () => {
+		if (checkVertical() || checkHorizontal()) {
+			console.log(`The winner is ${getActivePlayer().name}`);
+			return true;
+		} else {
+			console.log(`what you lookin at, keep playing dude -_-`);
+			return false;
+		}
+	};
+
 	const playRound = (column) => {
 		console.log(
 			`Dropping ${getActivePlayer().name}'s token into column ${column}...`,
@@ -93,9 +155,14 @@ function GameController(
 		board.dropToken(column, getActivePlayer().token);
 
 		// add check winner, handle logic such as win message
+		const winnerFound = checkWinner();
+		if (winnerFound) {
+			return getActivePlayer();
+		}
 
 		switchPlayerTurn();
 		printNewRound();
+		return false;
 	};
 
 	printNewRound();
@@ -103,8 +170,34 @@ function GameController(
 	return {
 		playRound,
 		getActivePlayer,
+		checkWinner,
+		resetGame,
 		getBoard: board.getBoard,
 	};
+}
+
+function GameIntro() {
+	// handler for submitting player names
+	function startGameHandler(e) {
+		e.preventDefault();
+
+		// get inputs
+		const playerOneInput = document.getElementById("playerone");
+		const playerTwoInput = document.getElementById("playertwo");
+
+		// read values
+		const p1Name = playerOneInput.value;
+		const p2Name = playerTwoInput.value;
+
+		const introDiv = document.querySelector(".intro");
+		introDiv.style.display = "none";
+
+		const game = GameController(p1Name, p2Name);
+		ScreenController(game);
+	}
+
+	const startGameBtn = document.querySelector("#start-game");
+	startGameBtn.addEventListener("click", startGameHandler);
 }
 
 function ScreenController(game) {
@@ -145,14 +238,31 @@ function ScreenController(game) {
 
 		if (!selectedColumn) return;
 
-		game.playRound(selectedColumn);
-		console.log("a cell is clicked");
+		const winner = game.playRound(selectedColumn);
+		if (winner) {
+			updateScreen();
+			messageDiv.textContent = `${winner.name} wins!`;
+			boardDiv.before(messageDiv);
+
+			// if winner is found, play again button is displayed
+			playAgainBtn.style.display = "block";
+		} else {
+			updateScreen();
+		}
+	}
+
+	function playNewGame() {
+		game.resetGame();
 		updateScreen();
+		messageDiv.remove();
+		playAgainBtn.style.display = "none";
 	}
 
 	boardDiv.addEventListener("click", clickHandlerBoard);
+	playAgainBtn.addEventListener("click", playNewGame);
+
+	// initial board render
 	updateScreen();
 }
 
-const startGame = GameController();
-ScreenController(startGame);
+GameIntro();
