@@ -12,7 +12,7 @@ function GameBoard() {
 
 	const getBoard = () => board;
 
-	dropToken = (column, player) => {
+	const dropToken = (column, player) => {
 		const availableCells = board
 			.filter((row) => row[column].getValue() === 0)
 			.map((row) => row[column]);
@@ -31,7 +31,7 @@ function GameBoard() {
 		console.log(boardWithCellValues);
 	};
 
-	return { getBoard, printBoard };
+	return { getBoard, dropToken, printBoard };
 }
 
 function Cell() {
@@ -92,6 +92,8 @@ function GameController(
 		);
 		board.dropToken(column, getActivePlayer().token);
 
+		// add check winner, handle logic such as win message
+
 		switchPlayerTurn();
 		printNewRound();
 	};
@@ -101,7 +103,15 @@ function GameController(
 	return {
 		playRound,
 		getActivePlayer,
+		getBoard: board.getBoard,
 	};
+}
+
+function ScreenController() {
+	const playerTurnDiv = document.querySelector(".turn");
+	const boardDiv = document.querySelector(".board");
+	const messageDiv = document.querySelector(".message");
+	const playAgainBtn = document.querySelector("#play-again-btn");
 }
 
 const startGame = GameController();
