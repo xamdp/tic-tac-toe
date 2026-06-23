@@ -99,6 +99,8 @@ function GameController(
 		activePlayer = players[0];
 	};
 
+	// const checkDiagonal = () => { };
+
 	const checkVertical = () => {
 		const updatedBoard = board.getBoard();
 		for (let col = 0; col < board.columns; col++) {
@@ -138,6 +140,14 @@ function GameController(
 		return false;
 	};
 
+	const checkTie = () => {
+		// okay, i need to iterate over the board and check if there is a value of either players
+		const currentBoard = board.getBoard();
+		return currentBoard.every((row) =>
+			row.every((cell) => cell.getValue() !== 0),
+		);
+	};
+
 	const checkWinner = () => {
 		if (checkVertical() || checkHorizontal()) {
 			console.log(`The winner is ${getActivePlayer().name}`);
@@ -158,6 +168,9 @@ function GameController(
 		const winnerFound = checkWinner();
 		if (winnerFound) {
 			return getActivePlayer();
+		} else if (checkTie()) {
+			console.log("its a tie");
+			return false;
 		}
 
 		switchPlayerTurn();
