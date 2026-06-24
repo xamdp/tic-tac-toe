@@ -95,7 +95,25 @@ function GameController(
 		activePlayer = players[0];
 	};
 
-	// const checkDiagonal = () => { };
+	// i just need to increment through every dimension, eg [row + 1, col + 1] , [row + 2, col + 2] and so on.
+	const checkDiagonal = () => {
+		const updatedBoard = board.getBoard();
+		for (let col = 0; col < board.columns; col++) {
+			for (let row = 0; row <= board.rows - 3; row++) {
+				if (
+					updatedBoard[row][col].getValue() ===
+					getActivePlayer().token &&
+					updatedBoard[row + 1][col + 1].getValue() ===
+					getActivePlayer().token &&
+					updatedBoard[row + 2][col + 2].getValue() ===
+					getActivePlayer().token
+				) {
+					return true;
+				}
+			}
+		}
+		return false;
+	};
 
 	const checkVertical = () => {
 		const updatedBoard = board.getBoard();
@@ -143,7 +161,7 @@ function GameController(
 	};
 
 	const checkWinner = () => {
-		if (checkVertical() || checkHorizontal()) {
+		if (checkVertical() || checkHorizontal() || checkDiagonal()) {
 			console.log(`The winner is ${getActivePlayer().name}`);
 			return true;
 		} else {
