@@ -192,7 +192,7 @@ function GameController(
 		}
 	};
 
-	// should accept row, col as args
+	// basically playRound returns an object if there is a winner
 	const playRound = (row, col) => {
 		console.log(
 			`Dropping ${getActivePlayer().name}'s token at [${row}, ${col}]`,
@@ -257,8 +257,6 @@ function ScreenController(game) {
 	const messageDiv = document.querySelector(".message");
 	const playAgainBtn = document.querySelector("#play-again-btn");
 
-	const activePlayer = game.getActivePlayer();
-
 	const updateScreen = () => {
 		// clear the board
 		boardDiv.textContent = "";
@@ -294,17 +292,18 @@ function ScreenController(game) {
 
 		// so i pass row, col to playRound, which will then be used by placeToken
 		const winner = game.playRound(row, col);
-		if (winner === activePlayer) {
+		// despite playRound returns "TIE", i just check if there is a winner variable, which it is, thats why it prints win, even it should be tie
+		if (winner !== "TIE" && winner.name) {
 			updateScreen();
 			messageDiv.textContent = `${winner.name} wins!`;
-			console.log(winner);
 			boardDiv.before(messageDiv);
-
 			playAgainBtn.style.display = "block";
 		} else if (winner === "TIE") {
-			messageDiv.textContent = `its a tie`;
-			updateScreen();
 			playerTurnDiv.style.display = "none";
+			messageDiv.textContent = `its a tie`;
+			boardDiv.before(messageDiv);
+			playAgainBtn.style.display = "block";
+			updateScreen();
 		} else {
 			updateScreen();
 		}
