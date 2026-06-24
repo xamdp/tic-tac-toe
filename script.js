@@ -12,15 +12,13 @@ function GameBoard() {
 
 	const getBoard = () => board;
 
-	const dropToken = (column, player) => {
-		const availableCells = board
-			.filter((row) => row[column].getValue() === 0)
-			.map((row) => row[column]);
-
-		if (!availableCells.length) return;
-
-		const lowestRow = availableCells.length - 1;
-		board[lowestRow][column].addToken(player);
+	const placeToken = (row, col, player) => {
+		const cell = board[row][col];
+		if (cell.getValue() === "") {
+			cell.addToken(player);
+			return true;
+		}
+		return false; // cell already occupied?
 	};
 
 	const printBoard = () => {
@@ -31,11 +29,11 @@ function GameBoard() {
 		console.log(boardWithCellValues);
 	};
 
-	return { getBoard, dropToken, printBoard, rows, columns };
+	return { getBoard, placeToken, printBoard, rows, columns };
 }
 
 function Cell() {
-	let value = 0;
+	let value = "";
 
 	const addToken = (player) => {
 		value = player;
@@ -44,7 +42,7 @@ function Cell() {
 	const getValue = () => value;
 
 	const reset = () => {
-		value = 0;
+		value = "";
 	};
 
 	return { addToken, getValue, reset };
@@ -88,14 +86,12 @@ function GameController(
 
 	const resetGame = () => {
 		const currentBoard = board.getBoard();
-		// reset every cell in the board
 		currentBoard.forEach((row) => {
 			row.forEach((cell) => {
 				cell.reset();
 			});
 		});
 
-		// resets the activePlayer
 		activePlayer = players[0];
 	};
 
@@ -123,7 +119,6 @@ function GameController(
 	const checkHorizontal = () => {
 		const updatedBoard = board.getBoard();
 		for (let row = 0; row < board.rows; row++) {
-			// am not sure what board.columns - 3 does
 			for (let col = 0; col <= board.columns - 3; col++) {
 				if (
 					updatedBoard[row][col].getValue() ===
@@ -141,10 +136,9 @@ function GameController(
 	};
 
 	const checkTie = () => {
-		// okay, i need to iterate over the board and check if there is a value of either players
 		const currentBoard = board.getBoard();
 		return currentBoard.every((row) =>
-			row.every((cell) => cell.getValue() !== 0),
+			row.every((cell) => cell.getValue() !== ""),
 		);
 	};
 
@@ -158,20 +152,24 @@ function GameController(
 		}
 	};
 
-	const playRound = (column) => {
+	// should accept row, col as args
+	const playRound = (row, col) => {
 		console.log(
-			`Dropping ${getActivePlayer().name}'s token into column ${column}...`,
+			`Dropping ${getActivePlayer().name}'s token at [${row}, ${col}]`,
 		);
-		board.dropToken(column, getActivePlayer().token);
+		// i think i need to change the column to cell,
+		const success = board.placeToken(row, col, getActivePlayer().token);
+		if (!success) {
+			console.log("cell already occupied");
+			return false;
+		}
 
-		// add check winner, handle logic such as win message
 		const winnerFound = checkWinner();
 		if (winnerFound) {
 			return getActivePlayer();
-		} else if (checkTie()) {
-			console.log("its a tie");
-			return false;
 		}
+
+		if (checkTie()) return "TIE";
 
 		switchPlayerTurn();
 		printNewRound();
@@ -219,6 +217,8 @@ function ScreenController(game) {
 	const messageDiv = document.querySelector(".message");
 	const playAgainBtn = document.querySelector("#play-again-btn");
 
+	const activePlayer = game.getActivePlayer();
+
 	const updateScreen = () => {
 		// clear the board
 		boardDiv.textContent = "";
@@ -230,35 +230,41 @@ function ScreenController(game) {
 		// display player's turn
 		playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
 
-		// render board
-		board.forEach((row) => {
-			row.forEach((cell, index) => {
-				// anything clickable should be a button
+		board.forEach((row, rowIndex) => {
+			row.forEach((cell, colIndex) => {
 				const cellButton = document.createElement("button");
 				cellButton.classList.add("cell");
-
-				// create a data attribute to identify the column
-				// this makes it easier to pass into playRound()
-				cellButton.dataset.column = index;
+				cellButton.dataset.row = rowIndex;
+				cellButton.dataset.col = colIndex;
 				cellButton.textContent = cell.getValue();
 				boardDiv.appendChild(cellButton);
 			});
 		});
 	};
 
+	// e would be cell, and it should be passed in playRound
 	function clickHandlerBoard(e) {
-		const selectedColumn = e.target.dataset.column;
+		const button = e.target;
+		// row and col will be passed insted to placeToken
+		const row = parseInt(button.dataset.row);
+		const col = parseInt(button.dataset.col);
+		console.log(row, col);
 
-		if (!selectedColumn) return;
+		if (isNaN(row) || isNaN(col)) return;
 
-		const winner = game.playRound(selectedColumn);
-		if (winner) {
+		// so i pass row, col to playRound, which will then be used by placeToken
+		const winner = game.playRound(row, col);
+		if (winner === activePlayer) {
 			updateScreen();
 			messageDiv.textContent = `${winner.name} wins!`;
+			console.log(winner);
 			boardDiv.before(messageDiv);
 
-			// if winner is found, play again button is displayed
 			playAgainBtn.style.display = "block";
+		} else if (winner === "TIE") {
+			messageDiv.textContent = `its a tie`;
+			updateScreen();
+			playerTurnDiv.style.display = "none";
 		} else {
 			updateScreen();
 		}
