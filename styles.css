@@ -121,4 +121,6 @@ body {
 
 .input-player label {
 	font-size: 2rem;
+	padding: 6px;
+	border: 1px solid black;
 }
