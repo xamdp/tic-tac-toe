@@ -237,8 +237,12 @@ function GameIntro() {
 		const playerTwoInput = document.getElementById("playertwo");
 
 		// read values
-		const p1Name = playerOneInput.value;
-		const p2Name = playerTwoInput.value;
+		const p1Name = playerOneInput.value
+			? playerOneInput.value
+			: "Player One";
+		const p2Name = playerTwoInput.value
+			? playerTwoInput.value
+			: "Player Two";
 
 		const introDiv = document.querySelector(".intro");
 		introDiv.style.display = "none";
@@ -247,6 +251,8 @@ function GameIntro() {
 		ScreenController(game);
 	}
 
+	const boardDiv = document.querySelector(".board");
+	boardDiv.style.display = "none";
 	const startGameBtn = document.querySelector("#start-game");
 	startGameBtn.addEventListener("click", startGameHandler);
 }
@@ -259,6 +265,7 @@ function ScreenController(game) {
 
 	const updateScreen = () => {
 		// clear the board
+		boardDiv.style.display = "grid";
 		boardDiv.textContent = "";
 
 		// get updated board and player turn
@@ -266,6 +273,7 @@ function ScreenController(game) {
 		const activePlayer = game.getActivePlayer();
 
 		// display player's turn
+		playerTurnDiv.style.display = "block";
 		playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
 
 		board.forEach((row, rowIndex) => {
@@ -296,14 +304,15 @@ function ScreenController(game) {
 		if (winner !== "TIE" && winner.name) {
 			updateScreen();
 			messageDiv.textContent = `${winner.name} wins!`;
-			boardDiv.before(messageDiv);
+			playerTurnDiv.before(messageDiv);
+			playerTurnDiv.style.display = "none";
 			playAgainBtn.style.display = "block";
 		} else if (winner === "TIE") {
-			playerTurnDiv.style.display = "none";
-			messageDiv.textContent = `its a tie`;
-			boardDiv.before(messageDiv);
-			playAgainBtn.style.display = "block";
 			updateScreen();
+			messageDiv.textContent = `its a tie`;
+			playerTurnDiv.style.display = "none";
+			playerTurnDiv.before(messageDiv);
+			playAgainBtn.style.display = "block";
 		} else {
 			updateScreen();
 		}
