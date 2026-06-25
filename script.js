@@ -247,8 +247,10 @@ function GameIntro() {
 		const introDiv = document.querySelector(".intro");
 		introDiv.style.display = "none";
 
-		const game = GameController(p1Name, p2Name);
-		ScreenController(game);
+		setTimeout(() => {
+			const game = GameController(p1Name, p2Name);
+			ScreenController(game);
+		}, 500);
 	}
 
 	const boardDiv = document.querySelector(".board");
