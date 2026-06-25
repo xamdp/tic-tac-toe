@@ -81,11 +81,17 @@ body {
 	display: block;
 	grid-column: 1/3;
 	background-color: grey;
-	font-size: 2rem;
-	border: none;
+	font-size: 2.3rem;
+	border: 1px solid black;
+	border-radius: 7px;
+	transition: transform 0.2s ease;
 
 	&:hover {
 		cursor: pointer;
+	}
+
+	&:active {
+		transform: scale(0.98);
 	}
 }
 
@@ -110,6 +116,7 @@ body {
 	font-size: 2rem;
 	border: none;
 	text-decoration: underline;
+	text-align: center;
 }
 
 .input-player label {
