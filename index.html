@@ -9,22 +9,30 @@
     <body>
         <div class="container">
             <div class="intro">
-                <form action="/" id="addPlayer">
-                    <p>
+                <form action="/" id="addPlayer" class="player-form">
+                    <p class="input-player">
                         <label for="playerone">Player One</label>
                         <input type="text" id="playerone" name="playerone" />
                     </p>
-                    <p>
-                        <label for="playertwo">Player One</label>
+                    <p class="input-player">
+                        <label for="playertwo">Player Two</label>
                         <input type="text" id="playertwo" name="playertwo" />
                     </p>
-                    <button id="start-game" type="submit">Start Game !</button>
+                    <button id="start-game" type="submit" class="start-btn">
+                        Start Game !
+                    </button>
                 </form>
             </div>
-            <button id="play-again-btn" class="play-again">Play again</button>
-            <div class="message"></div>
-            <div class="turn"></div>
-            <div class="board"></div>
+            <div class="board-ctn">
+                <div class="messages">
+                    <div class="message"></div>
+                    <div class="turn"></div>
+                </div>
+                <div class="board"></div>
+                <button id="play-again-btn" class="play-again">
+                    Play Again
+                </button>
+            </div>
         </div>
         <script src="./script.js"></script>
     </body>
